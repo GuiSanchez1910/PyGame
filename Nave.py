@@ -2,7 +2,7 @@ import pygame
 from ElementoJogo import ElementoJogo
 
 class Nave(ElementoJogo):
-    def __init__(self, largura_tela, altura_tela, velocidade=15, cor=(0, 255, 100)):
+    def __init__(self, largura_tela, altura_tela, velocidade=8, cor=(0, 255, 100)):
         # Inicializa a classe base com posição inicial centralizada embaixo
         super().__init__(
             x=largura_tela // 2 - 20,
@@ -61,7 +61,7 @@ class Nave(ElementoJogo):
     def atualizar_tiros(self):
         for tiro in self.tiros:
             # Move o tiro para cima
-            tiro.y -= 10
+            tiro.y -= 25
 
         # Remove os tiros que saíram pelo topo da tela
         self.tiros = [tiro for tiro in self.tiros if tiro.bottom >= 0]
