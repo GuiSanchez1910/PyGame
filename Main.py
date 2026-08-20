@@ -12,6 +12,9 @@ class Jogo:
         self.tela = pygame.display.set_mode((self.largura, self.altura))
         pygame.display.set_caption("Space Shooter - Projeto Base")
 
+        # Fonte para exibir o placar
+        self.fonte = pygame.font.SysFont(None, 32)
+
         self.clock = pygame.time.Clock()
         self.fps = 60
         self.rodando = True
@@ -71,6 +74,10 @@ class Jogo:
 
         for ast in self.asteroides:
             ast.desenhar(self.tela)
+
+        # Exibe o placar
+        texto_pontos = self.fonte.render(f"Pontos: {self.pontos}", True, (255, 255, 255))
+        self.tela.blit(texto_pontos, (10, 10))
 
         pygame.display.flip()
 

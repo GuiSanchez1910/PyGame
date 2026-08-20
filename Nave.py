@@ -16,6 +16,9 @@ class Nave(ElementoJogo):
         self.altura_tela = altura_tela
         self.vel_x = 0
         self.tiros = []  # Lista que guardará os tiros ativos
+        self.atirando = False
+        self.intervalo_tiro = 200  # milissegundos entre um tiro e outro
+        self.tempo_ultimo_tiro = 0
 
     def processar_evento(self, evento):
         """Controla os eventos de teclado para movimentação e disparo."""
@@ -25,13 +28,15 @@ class Nave(ElementoJogo):
             elif evento.key in (pygame.K_RIGHT, pygame.K_d):
                 self.vel_x = self.velocidade
             elif evento.key == pygame.K_SPACE:
-                self.atirar()
+                self.atirando = True
 
         elif evento.type == pygame.KEYUP:
             if evento.key in (pygame.K_LEFT, pygame.K_a) and self.vel_x < 0:
                 self.vel_x = 0
             elif evento.key in (pygame.K_RIGHT, pygame.K_d) and self.vel_x > 0:
                 self.vel_x = 0
+            elif evento.key == pygame.K_SPACE:
+                self.atirando = False
 
     def mover(self):
         """Aplica o deslocamento horizontal e trava nas bordas da tela."""
@@ -69,6 +74,12 @@ class Nave(ElementoJogo):
     def atualizar(self):
         self.mover()
         self.atualizar_tiros()
+
+        if self.atirando:
+            agora = pygame.time.get_ticks()
+            if agora - self.tempo_ultimo_tiro > self.intervalo_tiro:
+                self.tempo_ultimo_tiro = agora
+                self.atirar()
 
     def desenhar(self, tela):
         # Polimorfismo: desenha a nave em formato de triângulo
