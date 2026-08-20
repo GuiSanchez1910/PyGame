@@ -12,13 +12,17 @@ class Jogo:
         self.tela = pygame.display.set_mode((self.largura, self.altura))
         pygame.display.set_caption("Space Shooter - Projeto Base")
 
-        # Fonte para exibir o placar
-        self.fonte = pygame.font.SysFont(None, 32)
+        # Fontes do jogo
+        self.fonte_placar = pygame.font.SysFont(None, 32)
+        self.fonte_titulo = pygame.font.SysFont(None, 72)
+        self.fonte_instrucao = pygame.font.SysFont(None, 28)
 
         self.clock = pygame.time.Clock()
         self.fps = 60
         self.rodando = True
         self.pontos = 0
+        self.game_over = False
+        
 
         # Elementos do jogo
         self.nave = Nave(self.largura, self.altura)
@@ -28,17 +32,30 @@ class Jogo:
         self.tempo_ultimo_spawn = pygame.time.get_ticks()
         self.intervalo_spawn = 2000
 
+    def reiniciar(self):
+        self.game_over = False
+        self.pontos = 0
+        self.nave = Nave(self.largura, self.altura)
+        self.asteroides = []
+        self.tempo_ultimo_spawn = pygame.time.get_ticks()
+
     def processar_eventos(self):
         for evento in pygame.event.get():
             if evento.type == pygame.QUIT:
                 self.rodando = False
-            self.nave.processar_evento(evento)
+            elif evento.type == pygame.KEYDOWN:
+                if evento.key == pygame.K_ESCAPE:
+                    self.rodando = False
+                elif self.game_over and evento.key == pygame.K_r:
+                    self.reiniciar()
+
+            if not self.game_over:
+                self.nave.processar_evento(evento)
 
     def checar_colisoes(self):
         for ast in self.asteroides[:]:
             if self.nave.rect.colliderect(ast.rect):
-                self.rodando = False
-                print(f"Game Over! A nave foi atingida :( \nPontuação Final: {self.pontos}")
+                self.game_over = True
 
             for tiro in self.nave.tiros[:]:
                 if tiro.colliderect(ast.rect):
@@ -47,9 +64,11 @@ class Jogo:
 
                     ast.iniciar_status()
                     self.pontos += 1
-                    print(f"Acertou! Pontos: {self.pontos}")
 
     def atualizar(self):
+        if self.game_over:
+            return
+
         self.nave.atualizar()
 
         agora = pygame.time.get_ticks()
@@ -76,8 +95,23 @@ class Jogo:
             ast.desenhar(self.tela)
 
         # Exibe o placar
-        texto_pontos = self.fonte.render(f"Pontos: {self.pontos}", True, (255, 255, 255))
+        texto_pontos = self.fonte_placar.render(f"Pontos: {self.pontos}", True, (255, 255, 255))
         self.tela.blit(texto_pontos, (10, 10))
+
+        # Overlay de Game Over
+        if self.game_over:
+            overlay = pygame.Surface((self.largura, self.altura))
+            overlay.set_alpha(180)
+            overlay.fill((0, 0, 0))
+            self.tela.blit(overlay, (0, 0))
+
+            titulo = self.fonte_titulo.render("GAME OVER", True, (255, 80, 80))
+            pontos = self.fonte_placar.render(f"Pontuação Final: {self.pontos}", True, (255, 255, 255))
+            instrucao = self.fonte_instrucao.render("R para reiniciar | ESC para sair", True, (200, 200, 200))
+
+            self.tela.blit(titulo, ((self.largura - titulo.get_width()) // 2, 220))
+            self.tela.blit(pontos, ((self.largura - pontos.get_width()) // 2, 310))
+            self.tela.blit(instrucao, ((self.largura - instrucao.get_width()) // 2, 360))
 
         pygame.display.flip()
 
