@@ -1,5 +1,6 @@
 import random
 import pygame
+from PIL import Image
 from Nave import Nave
 from Asteroid import Asteroid
 
@@ -27,10 +28,43 @@ class Jogo:
         # Elementos do jogo
         self.nave = Nave(self.largura, self.altura)
 
+        bg_original = pygame.image.load("img/rainy.jpg").convert()
+        self.bg = pygame.transform.scale(bg_original, (self.largura, self.altura))
+        self.bg_y1 = 0
+        self.bg_y2 = -self.altura
+        self.vel_bg = 2
+
         self.asteroides = []
         self.limite_asteroides = 5
         self.tempo_ultimo_spawn = pygame.time.get_ticks()
         self.intervalo_spawn = 2000
+
+        # Projétil
+        img_tiro_original = pygame.image.load("img/batarang.png").convert_alpha()
+        self.imagem_tiro = pygame.transform.scale(img_tiro_original, (20, 50))
+
+        # Gif do Background
+        self.frames_bg = []
+        gif = Image.open("img/rain.gif")  # Coloque o nome exato do seu arquivo .gif
+
+        try:
+            while True:
+                # Converte o frame atual para RGBA
+                frame_rgba = gif.convert("RGBA")
+                # Transforma o frame do Pillow em uma imagem do Pygame
+                img_pygame = pygame.image.frombytes(frame_rgba.tobytes(), frame_rgba.size, "RGBA")
+                # Redimensiona para o tamanho da tela
+                img_pygame = pygame.transform.scale(img_pygame, (self.largura, self.altura))
+
+                self.frames_bg.append(img_pygame)
+                # Avança para o próximo frame do GIF
+                gif.seek(gif.tell() + 1)
+        except EOFError:
+            pass  # Chegou no fim do GIF, todos os frames foram carregados!
+
+        self.indice_frame = 0
+        self.tempo_ultimo_frame = pygame.time.get_ticks()
+        self.velocidade_animacao = 80  # milissegundos por frame (diminua para ficar mais rápido, aumente para mais lento)
 
     def reiniciar(self):
         self.game_over = False
@@ -69,6 +103,15 @@ class Jogo:
         if self.game_over:
             return
 
+        agora = pygame.time.get_ticks()
+        if agora - self.tempo_ultimo_frame > self.velocidade_animacao:
+            self.tempo_ultimo_frame = agora
+            self.indice_frame += 1
+
+            # Volta para o primeiro frame se chegou ao fim (loop infinito)
+            if self.indice_frame >= len(self.frames_bg):
+                self.indice_frame = 0
+
         self.nave.atualizar()
 
         agora = pygame.time.get_ticks()
@@ -88,11 +131,18 @@ class Jogo:
         self.checar_colisoes()
 
     def desenhar(self):
-        self.tela.fill((15, 15, 25))
+
+        imagem_atual = self.frames_bg[self.indice_frame]
+        self.tela.blit(imagem_atual, (0, 0))
+
         self.nave.desenhar(self.tela)
 
         for ast in self.asteroides:
             ast.desenhar(self.tela)
+
+        # "Carimba" a imagem do tiro em cada projetil da lista de tiros
+        for tiro in self.nave.tiros:
+            self.tela.blit(self.imagem_tiro, tiro)
 
         # Exibe o placar
         texto_pontos = self.fonte_placar.render(f"Pontos: {self.pontos}", True, (255, 255, 255))

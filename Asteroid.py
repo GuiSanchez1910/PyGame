@@ -7,7 +7,7 @@ class Asteroid(ElementoJogo):
     def __init__(self, largura_tela, altura_tela, velocidade=5, cor=(200, 50, 50)):
         self.largura_tela = largura_tela
         self.altura_tela = altura_tela
-        self.raio = 20
+        self.raio = 35
 
         super().__init__(
             x=0,
@@ -17,6 +17,10 @@ class Asteroid(ElementoJogo):
             cor=cor,
             velocidade=velocidade
         )
+
+        imagem_original = pygame.image.load("img/joker.png").convert_alpha()
+        self.imagem = pygame.transform.scale(imagem_original, (self.rect.width, self.rect.height))
+
         self.iniciar_status()
 
     def iniciar_status(self):
@@ -35,5 +39,5 @@ class Asteroid(ElementoJogo):
             self.iniciar_status()
 
     def desenhar(self, tela):
-        # Polimorfismo: desenha o asteroide como círculo
-        pygame.draw.circle(tela, self.cor, self.rect.center, self.raio)
+        # Substituímos o círculo pelo desenho da imagem usando o self.rect
+        tela.blit(self.imagem, self.rect)

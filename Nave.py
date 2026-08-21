@@ -5,10 +5,10 @@ class Nave(ElementoJogo):
     def __init__(self, largura_tela, altura_tela, velocidade=8, cor=(0, 255, 100)):
         # Inicializa a classe base com posição inicial centralizada embaixo
         super().__init__(
-            x=largura_tela // 2 - 20,
-            y=altura_tela - 60,
-            largura=40,
-            altura=40,
+            x=largura_tela // 2 - 40,
+            y=altura_tela - 100,
+            largura=65,
+            altura=65,
             cor=cor,
             velocidade=velocidade
         )
@@ -19,6 +19,9 @@ class Nave(ElementoJogo):
         self.atirando = False
         self.intervalo_tiro = 200  # milissegundos entre um tiro e outro
         self.tempo_ultimo_tiro = 0
+
+        imagem_original = pygame.image.load("img/batlogo.png").convert_alpha()
+        self.imagem = pygame.transform.scale(imagem_original, (self.rect.width, self.rect.height))
 
     def processar_evento(self, evento):
         """Controla os eventos de teclado para movimentação e disparo."""
@@ -82,14 +85,5 @@ class Nave(ElementoJogo):
                 self.atirar()
 
     def desenhar(self, tela):
-        # Polimorfismo: desenha a nave em formato de triângulo
-        pontos = [
-            (self.rect.centerx, self.rect.top),
-            (self.rect.left, self.rect.bottom),
-            (self.rect.right, self.rect.bottom)
-        ]
-        pygame.draw.polygon(tela, self.cor, pontos)
-
-        # Desenha os tiros ativos na cor branca
-        for tiro in self.tiros:
-            pygame.draw.rect(tela, (255, 255, 255), tiro)
+        # "carimbamos" (blit) a imagem da nave usando o retângulo dela (self.rect)
+        tela.blit(self.imagem, self.rect)
