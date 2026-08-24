@@ -88,11 +88,14 @@ class Jogo:
 
     def checar_colisoes(self):
         for ast in self.asteroides[:]:
-            if self.nave.rect.colliderect(ast.rect):
+
+            rect_ast = ast.rect.inflate(-50, -50)
+
+            if self.nave.rect.colliderect(rect_ast):
                 self.game_over = True
 
             for tiro in self.nave.tiros[:]:
-                if tiro.colliderect(ast.rect):
+                if tiro.colliderect(rect_ast):
                     if tiro in self.nave.tiros:
                         self.nave.tiros.remove(tiro)
 
