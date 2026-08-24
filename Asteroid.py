@@ -41,7 +41,7 @@ class Asteroid(ElementoJogo):
 
         self.rect.x = random.randint(0, limite_x)
         self.rect.y = random.randint(-150, -50)
-        self.velocidade = random.randint(5, 7)
+        self.velocidade = random.randint(3, 6)
         self.vida = 2
         self.destruido = False
 
