@@ -9,6 +9,7 @@ class Asteroid(ElementoJogo):
         self.altura_tela = altura_tela
         self.raio = 35
         self.tempo_destruicao = 0
+        self.destruido = False
 
         super().__init__(
             x=0,
@@ -41,7 +42,6 @@ class Asteroid(ElementoJogo):
         self.rect.y = random.randint(-150, -50)
         self.velocidade = random.randint(3, 6)
         self.vida = 2
-        self.destruido = False
 
     def mover(self):
         self.rect.y += self.velocidade
