@@ -4,11 +4,14 @@ from ElementoJogo import ElementoJogo
 class Nave(ElementoJogo):
     def __init__(self, largura_tela, altura_tela, velocidade=8, cor=(0, 255, 100)):
         # Inicializa a classe base com posição inicial centralizada embaixo
+        largura_nave = 65
+        altura_nave = 65
+
         super().__init__(
-            x=largura_tela // 2 - 40,
+            x=largura_tela // 2 - largura_nave // 2,
             y=altura_tela - 100,
-            largura=65,
-            altura=65,
+            largura=largura_nave,
+            altura=altura_nave,
             cor=cor,
             velocidade=velocidade
         )
