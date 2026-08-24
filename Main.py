@@ -33,12 +33,6 @@ class Jogo:
         # Elementos do jogo
         self.nave = Nave(self.largura, self.altura)
 
-        bg_original = pygame.image.load("img/rainy.jpg").convert()
-        self.bg = pygame.transform.scale(bg_original, (self.largura, self.altura))
-        self.bg_y1 = 0
-        self.bg_y2 = -self.altura
-        self.vel_bg = 2
-
         self.asteroides = []
         self.limite_asteroides = 5
         self.tempo_ultimo_spawn = pygame.time.get_ticks()
