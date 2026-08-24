@@ -8,6 +8,11 @@ from Asteroid import Asteroid
 class Jogo:
     def __init__(self, largura=800, altura=600):
         pygame.init()
+
+        pygame.mixer.music.load("audio/musica.mp3")
+        pygame.mixer.music.set_volume(0.5)
+        pygame.mixer.music.play(-1)
+
         self.largura = largura
         self.altura = altura
         self.tela = pygame.display.set_mode((self.largura, self.altura))
