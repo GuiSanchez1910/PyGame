@@ -89,6 +89,9 @@ class Jogo:
     def checar_colisoes(self):
         for ast in self.asteroides[:]:
 
+            if ast.destruido:
+                continue
+
             rect_ast_nave = ast.rect.inflate(-50, -50)
 
             if self.nave.rect.colliderect(rect_ast_nave):
@@ -101,8 +104,12 @@ class Jogo:
                     if tiro in self.nave.tiros:
                         self.nave.tiros.remove(tiro)
 
-                    ast.iniciar_status()
-                    self.pontos += 1
+                    ast.vida -= 1
+
+                    if ast.vida == 0:
+                        ast.destruido = True
+                        ast.tempo_destruicao = pygame.time.get_ticks()
+                        self.pontos += 1
 
     def atualizar(self):
         if self.game_over:
@@ -134,6 +141,14 @@ class Jogo:
             ast.mover()
 
         self.checar_colisoes()
+
+        # Remove asteroides depois da explosão
+        for ast in self.asteroides[:]:
+            if ast.destruido:
+                agora = pygame.time.get_ticks()
+
+                if agora - ast.tempo_destruicao >= 200:
+                    self.asteroides.remove(ast)
 
     def desenhar(self):
 

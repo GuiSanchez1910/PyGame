@@ -8,6 +8,9 @@ class Asteroid(ElementoJogo):
         self.largura_tela = largura_tela
         self.altura_tela = altura_tela
         self.raio = 35
+        self.vida = 2
+        self.destruido = False
+        self.tempo_destruicao = 0
 
         super().__init__(
             x=0,
@@ -21,6 +24,15 @@ class Asteroid(ElementoJogo):
         imagem_original = pygame.image.load("img/joker.png").convert_alpha()
         self.imagem = pygame.transform.scale(imagem_original, (self.rect.width, self.rect.height))
 
+        # Cria uma versão vermelha da imagem
+        self.imagem_vermelha = self.imagem.copy()
+        self.imagem_vermelha.fill((255, 0, 0), special_flags=pygame.BLEND_RGB_MULT)
+
+        # Imagem do segundo dano
+        explosao_original = pygame.image.load("img/explosao.png").convert_alpha()
+
+        self.imagem_explosao = pygame.transform.scale(explosao_original, (self.rect.width, self.rect.height))
+
         self.iniciar_status()
 
     def iniciar_status(self):
@@ -30,6 +42,8 @@ class Asteroid(ElementoJogo):
         self.rect.x = random.randint(0, limite_x)
         self.rect.y = random.randint(-150, -50)
         self.velocidade = random.randint(5, 7)
+        self.vida = 2
+        self.destruido = False
 
     def mover(self):
         self.rect.y += self.velocidade
@@ -39,5 +53,11 @@ class Asteroid(ElementoJogo):
             self.iniciar_status()
 
     def desenhar(self, tela):
-        # Substituímos o círculo pelo desenho da imagem usando o self.rect
-        tela.blit(self.imagem, self.rect)
+        if self.vida == 2:
+            tela.blit(self.imagem, self.rect)
+
+        elif self.vida == 1:
+            tela.blit(self.imagem_vermelha, self.rect)
+
+        elif self.vida == 0:
+            tela.blit(self.imagem_explosao, self.rect)
