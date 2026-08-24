@@ -8,8 +8,6 @@ class Asteroid(ElementoJogo):
         self.largura_tela = largura_tela
         self.altura_tela = altura_tela
         self.raio = 35
-        self.vida = 2
-        self.destruido = False
         self.tempo_destruicao = 0
 
         super().__init__(
